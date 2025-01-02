@@ -16,7 +16,7 @@ Afterwards enter the following command to build and install st (if
 necessary as root):
 
 ```sh
-    make clean install
+  make clean install
 ```
 
 ## Running st
@@ -25,7 +25,7 @@ If you did not install st with make clean install, you must compile
 the st terminfo entry with the following command:
 
 ```sh
-    tic -sx st.info
+  tic -sx st.info
 ```
 
 See the man page for additional details.
@@ -57,7 +57,6 @@ Christoph Lohmann <20h@r-36.net>
 
 Use the excellent tool of [utmp](https://git.suckless.org/utmp/) for this task.
 
-
 ### Some _random program_ complains that st is unknown/not recognised/unsupported/whatever!
 
 It means that st doesn’t have any terminfo entry on your system. Chances are
@@ -72,7 +71,6 @@ you can manually run `tic -sx st.info`.
 * Some programs don’t complain about the lacking st description and default to
   another terminal. In that case see the question about terminfo.
 
-
 ### How do I scroll back up?
 
 * Using a terminal multiplexer.
@@ -81,24 +79,22 @@ you can manually run `tic -sx st.info`.
 * Using the excellent tool of [scroll](https://git.suckless.org/scroll/).
 * Using the scrollback [patch](https://st.suckless.org/patches/scrollback/).
 
-
 ### I would like to have utmp and/or scroll functionality by default
 
 You can add the absolute path of both programs in your config.h file. You only
 have to modify the value of utmp and scroll variables.
 
-
 ### Why doesn't the Del key work in some programs?
 
 Taken from the terminfo manpage:
 
-	If the terminal has a keypad that transmits codes when the keys
-	are pressed, this information can be given. Note that it is not
-	possible to handle terminals where the keypad only works in
-	local (this applies, for example, to the unshifted HP 2621 keys).
-	If the keypad can be set to transmit or not transmit, give these
-	codes as smkx and rmkx. Otherwise the keypad is assumed to
-	always transmit.
+> If the terminal has a keypad that transmits codes when the keys
+> are pressed, this information can be given. Note that it is not
+> possible to handle terminals where the keypad only works in
+> local (this applies, for example, to the unshifted HP 2621 keys).
+> If the keypad can be set to transmit or not transmit, give these
+> codes as smkx and rmkx. Otherwise the keypad is assumed to
+> always transmit.
 
 In the st case smkx=E[?1hE= and rmkx=E[?1lE>, so it is mandatory that
 applications which want to test against keypad keys send these
@@ -107,10 +103,15 @@ sequences.
 But buggy applications (like bash and irssi, for example) don't do this. A fast
 solution for them is to use the following command:
 
-	$ printf '\033[?1h\033=' >/dev/tty
+```sh
+	printf '\033[?1h\033=' >/dev/tty
+```
 
 or
+
+```sh
 	$ tput smkx
+```
 
 In the case of bash, readline is used. Readline has a different note in its
 manpage about this issue:
@@ -126,20 +127,22 @@ applications using readline.
 If you are using zsh, then read the zsh FAQ
 <http://zsh.sourceforge.net/FAQ/zshfaq03.html#l25>:
 
-	It should be noted that the O / [ confusion can occur with other keys
-	such as Home and End. Some systems let you query the key sequences
-	sent by these keys from the system's terminal database, terminfo.
-	Unfortunately, the key sequences given there typically apply to the
-	mode that is not the one zsh uses by default (it's the "application"
-	mode rather than the "raw" mode). Explaining the use of terminfo is
-	outside of the scope of this FAQ, but if you wish to use the key
-	sequences given there you can tell the line editor to turn on
-	"application" mode when it starts and turn it off when it stops:
+> It should be noted that the O / [ confusion can occur with other keys
+> such as Home and End. Some systems let you query the key sequences
+> sent by these keys from the system's terminal database, terminfo.
+> Unfortunately, the key sequences given there typically apply to the
+> mode that is not the one zsh uses by default (it's the "application"
+> mode rather than the "raw" mode). Explaining the use of terminfo is
+> outside of the scope of this FAQ, but if you wish to use the key
+> sequences given there you can tell the line editor to turn on
+> "application" mode when it starts and turn it off when it stops:
 
-		function zle-line-init () { echoti smkx }
-		function zle-line-finish () { echoti rmkx }
-		zle -N zle-line-init
-		zle -N zle-line-finish
+```sh
+	function zle-line-init () { echoti smkx }
+	function zle-line-finish () { echoti rmkx }
+	zle -N zle-line-init
+	zle -N zle-line-finish
+```
 
 Putting these lines into your .zshrc will fix the problems.
 
@@ -149,7 +152,6 @@ Putting these lines into your .zshrc will fix the problems.
 St supports meta in 8bit mode, but the default terminfo entry doesn't
 use this capability. If you want it, you have to use the 'st-meta' value
 in TERM.
-
 
 ### I cannot compile st in OpenBSD
 
@@ -280,19 +282,21 @@ diff --git a/x.c b/x.c
 
 Xft makes st crash when rendering color emojis with the following error:
 
+```sh
 "X Error of failed request:  BadLength (poly request too large or internal Xlib length error)"
   Major opcode of failed request:  139 (RENDER)
   Minor opcode of failed request:  20 (RenderAddGlyphs)
   Serial number of failed request: 1595
   Current serial number in output stream:  1818"
+```
 
 This is a known bug in Xft (not st) which happens on some platforms and
 combination of particular fonts and fontconfig settings.
 
 See also:
-<https://gitlab.freedesktop.org/xorg/lib/libxft/issues/6>
-<https://bugs.freedesktop.org/show_bug.cgi?id=107534>
-<https://bugzilla.redhat.com/show_bug.cgi?id=1498269>
+- <https://gitlab.freedesktop.org/xorg/lib/libxft/issues/6>
+- <https://bugs.freedesktop.org/show_bug.cgi?id=107534>
+- <https://bugzilla.redhat.com/show_bug.cgi?id=1498269>
 
 The solution is to remove color emoji fonts or disable this in the fontconfig
 XML configuration.  As an ugly workaround (which may work only on newer
